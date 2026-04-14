@@ -9,14 +9,14 @@
     "openai-compatible"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/Andreh7777/n8n-nodes-regoloai#readme",
+  "homepage": "https://github.com/regolo-ai/n8n-nodes-regoloai#readme",
   "author": {
-    "name": "Andreh7777",
-    "email": "andrea.nardoni7@gmail.com"
+    "name": "regolo-ai",
+    "email": "dev@regolo.ai"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Andreh7777/n8n-nodes-regoloai.git"
+    "url": "https://github.com/regolo-ai/n8n-nodes-regoloai.git"
   },
   "engines": {
     "node": ">=20.15"
