@@ -11,8 +11,12 @@
   "license": "MIT",
   "homepage": "https://github.com/regolo-ai/n8n-nodes-regoloai#readme",
   "author": {
-    "name": "regolo-ai",
-    "email": "dev@regolo.ai"
+    "name": "regolo.ai",
+    "email": "help@regolo.ai"
+  },
+  "bugs": {
+    "url": "https://github.com/regolo-ai/n8n-nodes-regoloai/issues",
+    "email": "help@regolo.ai"
   },
   "repository": {
     "type": "git",
