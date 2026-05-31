@@ -1,5 +1,5 @@
 import type { INodeExecutionData, INodeProperties } from 'n8n-workflow';
-import { sendErrorPostReceive } from './GenericFunctions';
+import { dedupeOptionsPostReceive, sendErrorPostReceive } from './GenericFunctions';
 
 export const textOperations: INodeProperties[] = [
 	{
@@ -55,6 +55,7 @@ const embedOperations: INodeProperties[] = [
 									value: '={{ $responseItem.model_name }}',
 								},
 							},
+							dedupeOptionsPostReceive,
 							{ type: 'sort', properties: { key: 'name' } },
 						],
 					},

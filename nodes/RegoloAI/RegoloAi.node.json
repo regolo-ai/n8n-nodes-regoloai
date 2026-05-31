@@ -1,5 +1,5 @@
 {
-	"node": "n8n-nodes-base.regoloAi",
+	"node": "n8n-nodes-regoloai.regoloAi",
 	"nodeVersion": "1.0",
 	"codexVersion": "1.0",
 	"categories": ["Utility", "AI"],
@@ -15,5 +15,14 @@
 			}
 		]
 	},
-	"alias": ["Regolo AI", "Regolo Chat", "Image Generation", "Embeddings"]
+	"alias": [
+		"Regolo AI",
+		"Regolo Chat",
+		"OCR",
+		"Whisper",
+		"Speech to Text",
+		"Image Generation",
+		"Embeddings",
+		"Rerank"
+	]
 }

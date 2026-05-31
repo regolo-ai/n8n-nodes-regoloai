@@ -8,5 +8,7 @@ module.exports = {
 		...tsJestTransformCfg,
 	},
 	testMatch: ['**/?(*.)+(test|spec).[tj]s?(x)'],
+	testPathIgnorePatterns: ['<rootDir>/dist/', '<rootDir>/node_modules/'],
+	modulePathIgnorePatterns: ['<rootDir>/dist/'],
 	collectCoverageFrom: ['**/*.ts', '!**/__tests__/**', '!**/node_modules/**'],
 };

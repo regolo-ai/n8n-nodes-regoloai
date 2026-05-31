@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-regoloai",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "RegoloAI integration for n8n.io",
   "keywords": [
     "n8n-community-node-package",
@@ -19,7 +19,7 @@
     "url": "https://github.com/regolo-ai/n8n-nodes-regoloai.git"
   },
   "engines": {
-    "node": ">=20.15"
+    "node": ">=20.19 <25"
   },
   "main": "index.js",
   "scripts": {
@@ -38,12 +38,23 @@
   ],
   "n8n": {
     "n8nNodesApiVersion": 1,
+    "aiNodeSdkVersion": 1,
     "credentials": [
       "dist/credentials/RegoloApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/RegoloAI/RegoloAi.node.js"
+      "dist/nodes/RegoloAI/RegoloAi.node.js",
+      "dist/nodes/RegoloAI/RegoloAiChatModel.node.js",
+      "dist/nodes/RegoloAI/RegoloAiEmbeddings.node.js",
+      "dist/nodes/RegoloAI/RegoloAiReranker.node.js",
+      "dist/nodes/RegoloAI/RegoloAiImage.node.js",
+      "dist/nodes/RegoloAI/RegoloAiOcr.node.js",
+      "dist/nodes/RegoloAI/RegoloAiSpeechToText.node.js"
     ]
+  },
+  "dependencies": {
+    "@langchain/core": "^1.1.48",
+    "@langchain/openai": "^1.4.4"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
@@ -58,6 +69,7 @@
     "typescript": "^5.8.2"
   },
   "peerDependencies": {
+    "@n8n/ai-node-sdk": "*",
     "n8n-workflow": "*"
   }
 }

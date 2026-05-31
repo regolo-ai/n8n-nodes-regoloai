@@ -2,7 +2,7 @@
 
 This is an n8n community node. It lets you use **RegoloAI** in your n8n workflows.
 
-RegoloAI is an European, green, OpenAI-compatible inference provider offering endpoints for *chat completions*, *text completions*, *embeddings*, and *image generation*, making it easy to integrate advanced AI features into your automations.
+RegoloAI is an European, green, OpenAI-compatible inference provider offering endpoints for *chat completions*, *embeddings*, *reranking*, *OCR*, *speech to text*, and *image generation*, making it easy to integrate advanced AI features into your automations.
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
 
@@ -22,27 +22,38 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 npm install n8n-nodes-regoloai
 ```
 
-After installation, restart n8n. You will find the **Regolo AI** node in the editor.
+After installation, restart n8n. You will find dedicated **Regolo AI** nodes in the editor.
 
 ---
 
 ## Operations
 
-The Regolo AI node supports the following operations:
+The package exposes dedicated nodes for each Regolo capability:
 
-### **Chat**
+### **Regolo AI Chat Model**
 
-* Create **chat completions** (multi-turn conversations, system/user/assistant roles)
+* Supplies an **AI Chat Model** output for n8n AI Agent, Basic LLM Chain, and compatible AI nodes
 
-### **Text**
+### **Regolo AI Embeddings**
 
-* Generate text completions from a prompt
-* Generate vector **embeddings** for input text
+* Supplies an **AI Embeddings** output for vector stores and compatible AI workflows
 
-### **Image**
+### **Regolo AI Reranker**
 
-* Create images from a text prompt
-* Return results as **image URLs** or as **binary files** (PNG)
+* Supplies an **AI Reranker** output for compatible retrieval and vector-store workflows
+
+### **Regolo AI Image**
+
+* Creates images from a text prompt
+* Returns results as **image URLs** or **binary files** (PNG)
+
+### **Regolo AI OCR**
+
+* Sends image URLs, data URLs, base64 images, or binary image files to OCR/vision-capable Regolo models
+
+### **Regolo AI Speech to Text**
+
+* Transcribe audio with Regolo speech-to-text models such as Whisper-compatible models
 
 ---
 
@@ -63,8 +74,8 @@ The credentials use **Bearer token authentication**.
 
 ## Compatibility
 
-* **Minimum n8n version**: 1.40.0
-* **Node.js version**: >= 20.15
+* **Minimum n8n version**: a recent self-hosted n8n version with community AI node support
+* **Node.js version**: >= 20.19 < 25
 * Tested with: Regolo AI API (OpenAI-compatible endpoints)
 
 There are no known incompatibilities.
@@ -73,16 +84,20 @@ There are no known incompatibilities.
 
 ## Usage
 
-* Add the **Regolo AI** node in your workflow (you can find it in the "AI" category).
-* Select a **Resource** (`Chat`, `Text`, `Image`) and then the desired **Operation**.
+* To use Regolo as the model for an n8n AI Agent or Basic LLM Chain, add **Regolo AI Chat Model** and connect it to the model input.
+* To use Regolo embeddings in vector workflows, add **Regolo AI Embeddings** where n8n asks for an embeddings model.
+* To use Regolo reranking, add **Regolo AI Reranker** where n8n asks for a reranker.
+* To call image generation, OCR, or speech-to-text as regular workflow steps, add the dedicated **Regolo AI Image**, **Regolo AI OCR**, or **Regolo AI Speech to Text** node.
 * Configure the parameters (model, prompt, options).
 * Connect the node to other n8n nodes to automate your AI-driven workflows.
 
 ### Notes
 
-* Models are dynamically loaded from the `/models` or `/model/info` endpoints.
+* The older combined **Regolo AI** node is kept hidden for workflow compatibility, but new workflows should use the dedicated nodes.
+* Models are dynamically loaded from Regolo catalog endpoints when available.
 * When selecting **Custom (Type Manually)**, you must provide a valid model ID in the **Custom Model** field.
 * For image generation, you can choose to return either **URLs** or **binary PNGs**.
+* For private/custom deployed Regolo models, enable **Use Custom Model Endpoint**.
 
 ---
 
@@ -97,13 +112,34 @@ There are no known incompatibilities.
 
 ## Version history
 
+* **0.3.0**
+
+	* Added dedicated visible nodes for chat model, embeddings, reranker, image generation, OCR, and speech-to-text
+	* Kept the legacy combined **Regolo AI** node hidden for existing workflows
+	* Split model dropdowns by model family so AI and workflow nodes show the relevant Regolo models
+
+* **0.2.5**
+
+	* Consolidated Regolo into a single visible **Regolo AI** node
+	* Added modes for OCR/vision, speech-to-text, reranking, AI embeddings, and AI reranker output
+	* Made model catalog loading permissive and deduplicated across Regolo catalog response shapes
+
+* **0.2.1**
+
+	* Removed duplicate model entries from Regolo model dropdowns
+
+* **0.2.0**
+
+	* Added **Regolo AI Chat Model** for n8n AI Agent and chain connections
+	* Marked the regular **Regolo AI** node as usable as an AI tool
+	* Kept standalone support for chat completions, embeddings, and image generation
+
 * **0.1.0**
 
 	* Initial release
 	* Added support for:
 
 		* Chat completions
-		* Text completions
 		* Text embeddings
 		* Image generation
 	* Added simplified output modes for text and embeddings

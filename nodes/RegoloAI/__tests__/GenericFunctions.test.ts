@@ -1,4 +1,11 @@
-import { sendErrorPostReceive, isString } from '../GenericFunctions';
+import {
+	dedupeOptionsPostReceive,
+	filterModelOptions,
+	getRegoloModelOptions,
+	isString,
+	sendErrorPostReceive,
+	uniqueModelOptions,
+} from '../GenericFunctions';
 import { NodeApiError } from 'n8n-workflow';
 
 jest.mock('n8n-workflow', () => {
@@ -130,6 +137,119 @@ describe('GenericFunctions', () => {
 			expect(isString([])).toBe(false);
 			expect(isString(null)).toBe(false);
 			expect(isString(undefined)).toBe(false);
+		});
+	});
+
+	describe('dedupeOptionsPostReceive', () => {
+		it('removes duplicate options by value and keeps the first occurrence', async () => {
+			const data = [
+				{ json: { name: 'mistral-small3.2', value: 'mistral-small3.2' } },
+				{ json: { name: 'Mistral Small 3.2', value: 'mistral-small3.2' } },
+				{ json: { name: 'qwen3.5-9b', value: 'qwen3.5-9b' } },
+			];
+
+			const result = await dedupeOptionsPostReceive.call(createCtx(), data as any);
+
+			expect(result).toEqual([
+				{ json: { name: 'mistral-small3.2', value: 'mistral-small3.2' } },
+				{ json: { name: 'qwen3.5-9b', value: 'qwen3.5-9b' } },
+			]);
+		});
+	});
+
+	describe('uniqueModelOptions', () => {
+		it('accepts Regolo, OpenAI-style, named, and string model records', () => {
+			expect(
+				uniqueModelOptions([
+					{ model_name: 'Llama-3.3-70B-Instruct' },
+					{ id: 'gte-Qwen2' },
+					{ name: 'Qwen-Image' },
+					'faster-whisper-large-v3',
+					{ id: 'llama-3.3-70b-instruct' },
+				]),
+			).toEqual([
+				{ name: 'faster-whisper-large-v3', value: 'faster-whisper-large-v3' },
+				{ name: 'gte-Qwen2', value: 'gte-Qwen2' },
+				{ name: 'Llama-3.3-70B-Instruct', value: 'Llama-3.3-70B-Instruct' },
+				{ name: 'Qwen-Image', value: 'Qwen-Image' },
+			]);
+		});
+	});
+
+	describe('filterModelOptions', () => {
+		const options = uniqueModelOptions([
+			'Llama-3.3-70B-Instruct',
+			'gte-Qwen2',
+			'Qwen3-Reranker-4B',
+			'Qwen-Image',
+			'deepseek-ocr',
+			'faster-whisper-large-v3',
+		]);
+
+		it('keeps chat models out of specialist model lists', () => {
+			expect(filterModelOptions(options, 'chat')).toEqual([
+				{ name: 'Llama-3.3-70B-Instruct', value: 'Llama-3.3-70B-Instruct' },
+			]);
+		});
+
+		it('filters specialist families by model name hints', () => {
+			expect(filterModelOptions(options, 'embeddings')).toEqual([
+				{ name: 'gte-Qwen2', value: 'gte-Qwen2' },
+			]);
+			expect(filterModelOptions(options, 'rerank')).toEqual([
+				{ name: 'Qwen3-Reranker-4B', value: 'Qwen3-Reranker-4B' },
+			]);
+			expect(filterModelOptions(options, 'image')).toEqual([
+				{ name: 'Qwen-Image', value: 'Qwen-Image' },
+			]);
+			expect(filterModelOptions(options, 'ocr')).toEqual([
+				{ name: 'deepseek-ocr', value: 'deepseek-ocr' },
+			]);
+			expect(filterModelOptions(options, 'speechToText')).toEqual([
+				{ name: 'faster-whisper-large-v3', value: 'faster-whisper-large-v3' },
+			]);
+		});
+	});
+
+	describe('getRegoloModelOptions', () => {
+		it('tries catalog endpoints and returns deduplicated options', async () => {
+			const httpRequestWithAuthentication = jest
+				.fn()
+				.mockRejectedValueOnce(new Error('not found'))
+				.mockResolvedValueOnce({
+					data: [{ id: 'deepseek-ocr' }, { model_name: 'deepseek-ocr' }, 'Qwen3-Reranker-4B'],
+				});
+			const ctx = {
+				getCredentials: jest.fn(async () => ({
+					apiKey: 'test-api-key',
+					url: 'https://api.regolo.ai/v1',
+				})),
+				helpers: {
+					httpRequestWithAuthentication,
+				},
+			};
+
+			const result = await getRegoloModelOptions.call(ctx as any);
+
+			expect(result).toEqual([
+				{ name: 'deepseek-ocr', value: 'deepseek-ocr' },
+				{ name: 'Qwen3-Reranker-4B', value: 'Qwen3-Reranker-4B' },
+			]);
+			expect(httpRequestWithAuthentication).toHaveBeenCalledTimes(2);
+		});
+
+		it('returns an empty list instead of throwing when all catalog endpoints fail', async () => {
+			const ctx = {
+				getCredentials: jest.fn(async () => ({
+					apiKey: 'test-api-key',
+					url: 'https://api.regolo.ai/v1',
+				})),
+				helpers: {
+					httpRequestWithAuthentication: jest.fn().mockRejectedValue(new Error('offline')),
+				},
+			};
+
+			await expect(getRegoloModelOptions.call(ctx as any)).resolves.toEqual([]);
 		});
 	});
 });
