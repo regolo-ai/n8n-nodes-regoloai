@@ -58,7 +58,8 @@
   },
   "dependencies": {
     "@langchain/core": "^1.1.48",
-    "@langchain/openai": "^1.4.4"
+    "@langchain/openai": "^1.4.4",
+    "@n8n/ai-node-sdk": "*"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
